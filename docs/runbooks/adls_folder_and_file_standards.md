@@ -50,3 +50,17 @@ Each quarantined record must include:
 - rejection_reason_text
 - quarantine_timestamp
 - original_payload where practical
+
+
+## Storage Cleanup Runbook
+
+- Never delete production checkpoint folders.
+- Delete only disposable test checkpoints after testing.
+- Keep Landing files until Bronze processing succeeds.
+- Move successfully processed Landing files to Archive when archive logic is implemented.
+- Keep quarantined files until errors are corrected and reprocessed.
+- Delete temporary test files after validation.
+- Retain Bronze, Silver, Gold and Audit data required for evidence.
+- Stop all streaming jobs before deleting related checkpoints or Delta data.
+- Review the exact storage path before every delete operation.
+- Do not delete the ridestream container while the project is active.
