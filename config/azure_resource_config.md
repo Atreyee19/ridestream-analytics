@@ -47,5 +47,4 @@ Environment-specific resource names, paths and settings will be passed through:
 
 All new compatible Azure resources will use the same region as the existing Databricks, ADLS and ADF resources.
 
-Verified project region: `<enter-region-after-checking>`
-``
+Verified project region: Central India
