@@ -27,3 +27,14 @@
 ### Ratings
 - Mandatory: rating_id, ride_id, passenger_id, driver_id, rating_timestamp, created_at, updated_at
 - Nullable: passenger_rating, driver_rating, passenger_feedback, driver_feedback
+
+## Natural-Key and Uniqueness Rules
+
+- Passengers: email and phone_number must be unique.
+- Drivers: email, phone_number and license_number must be unique.
+- Vehicles: registration_number must be unique.
+- Locations: location_id is currently the stable source key.
+- Rides: ride_id must be unique.
+- Payments: payment_id and transaction_reference must be unique.
+- Ratings: rating_id must be unique, and one rating record is allowed per ride.
+- Streaming events: event_id must be globally unique.
