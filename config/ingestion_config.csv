@@ -5,4 +5,4 @@ vehicles,ridestream,landing/vehicles,*.parquet,ridestream,bronze/vehicles,parque
 locations,ridestream,landing/locations,*.parquet,ridestream,bronze/locations,parquet,,location_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,locations_schema,databricks/notebooks/01_bronze/nb_bronze_generic,4,2
 rides,ridestream,landing/rides,*.parquet,ridestream,bronze/rides,parquet,,ride_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,rides_schema,databricks/notebooks/01_bronze/nb_bronze_generic,5,2
 payments,ridestream,landing/payments,*.parquet,ridestream,bronze/payments,parquet,,payment_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,payments_schema,databricks/notebooks/01_bronze/nb_bronze_generic,6,2
-ratings,ridestream,landing/ratings,*.parquet,ridestream,bronze/ratings*parquet,,rating_id,INCREMENTAL,upd*ted_at,1900-01-01T00:00:00Z,Y,rati*gs_schema,databricks/notebooks/01_*ronze/nb_bronze_generic,7,2
+ratings,ridestream,landing/ratings,*.parquet,ridestream,bronze/ratings,parquet,,rating_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,ratings_schema,databricks/notebooks/01_bronze/nb_bronze_generic,7,2
