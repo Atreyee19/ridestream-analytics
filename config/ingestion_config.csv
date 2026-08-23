@@ -1,0 +1,8 @@
+entity_name,source_container,source_directory,source_file_pattern,target_container,target_directory,file_format,delimiter,primary_key,load_type,watermark_column,last_watermark_value,active_flag,expected_schema,notebook_path,processing_order,retry_count
+passengers,ridestream,landing/passengers,*.parquet,ridestream,bronze/passengers,parquet,,passenger_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,passengers_schema,databricks/notebooks/01_bronze/nb_bronze_generic,1,2
+drivers,ridestream,landing/drivers,*.parquet,ridestream,bronze/drivers,parquet,,driver_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,drivers_schema,databricks/notebooks/01_bronze/nb_bronze_generic,2,2
+vehicles,ridestream,landing/vehicles,*.parquet,ridestream,bronze/vehicles,parquet,,vehicle_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,vehicles_schema,databricks/notebooks/01_bronze/nb_bronze_generic,3,2
+locations,ridestream,landing/locations,*.parquet,ridestream,bronze/locations,parquet,,location_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,locations_schema,databricks/notebooks/01_bronze/nb_bronze_generic,4,2
+rides,ridestream,landing/rides,*.parquet,ridestream,bronze/rides,parquet,,ride_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,rides_schema,databricks/notebooks/01_bronze/nb_bronze_generic,5,2
+payments,ridestream,landing/payments,*.parquet,ridestream,bronze/payments,parquet,,payment_id,INCREMENTAL,updated_at,1900-01-01T00:00:00Z,Y,payments_schema,databricks/notebooks/01_bronze/nb_bronze_generic,6,2
+ratings,ridestream,landing/ratings,*.parquet,ridestream,bronze/ratings*parquet,,rating_id,INCREMENTAL,upd*ted_at,1900-01-01T00:00:00Z,Y,rati*gs_schema,databricks/notebooks/01_*ronze/nb_bronze_generic,7,2
