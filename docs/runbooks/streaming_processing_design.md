@@ -103,3 +103,45 @@ A completed combination must not create another successful audit result during a
 7. Audit uniqueness prevents duplicate completion records.
 8. Identical reruns must leave Silver and Gold row counts unchanged.
 9. A failed run must not commit an incorrect watermark.
+
+## Near-Real-Time Gold Processing
+
+### Target Analytics Latency
+
+The RideStream portfolio demonstration targets an end-to-end analytics latency of five minutes or less from Event Hubs publication to Gold analytical output.
+
+Actual latency depends on Databricks compute startup time, micro-batch frequency, Event Hubs availability, Delta MERGE duration, and reporting refresh mode.
+
+### Gold Update Method
+
+Gold Ride Fact records will be updated using short controlled micro-batches with `foreachBatch` and Delta MERGE.
+
+Each micro-batch processes only newly accepted Silver ride-state events. A Ride Fact row is inserted for a new ride and updated as the ride progresses through requested, assigned, started, completed, or cancelled states.
+
+The process prevents older out-of-order events from replacing a newer Ride Fact state.
+
+### ADF and Structured Streaming Responsibilities
+
+Azure Data Factory remains the batch and control-plane orchestrator.
+
+ADF is responsible for:
+
+- Master-data ingestion
+- Scheduled dimension refreshes
+- Backfills
+- Data-quality checks
+- Recovery workflows
+- Stream-health monitoring
+- Databricks notebook and job orchestration
+
+PySpark Structured Streaming is responsible for:
+
+- Reading live events from Event Hubs
+- Checkpoint-based offset tracking
+- Watermarking
+- Stateful deduplication
+- Micro-batch processing
+- Silver current-state updates
+- Near-real-time Gold updates
+
+ADF does not process every streaming event. Databricks Structured Streaming continuously or periodically processes live events, while ADF manages scheduled and operational workflows.
