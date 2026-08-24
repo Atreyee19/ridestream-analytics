@@ -218,3 +218,22 @@ dim_passenger ----    fct_payments     ---- dim_driver
                             |
                             |
                   dim_payment_method
+
+
+
+
+## Why Driver and Passenger Use SCD Type 2
+
+Driver and Passenger dimensions use SCD Type 2 because historical attribute changes must be preserved.
+
+When a tracked attribute such as Driver city, Driver vehicle category, Passenger city, or Passenger loyalty tier changes:
+
+1. The existing current version is expired.
+2. Its `effective_to` value is updated.
+3. Its `is_current` value becomes `false`.
+4. A new version is inserted with a new surrogate key.
+5. The new version becomes current with `is_current = true`.
+
+This allows a Ride fact to join to the dimension version that was valid when the ride occurred.
+
+SCD Type 1 would overwrite the existing dimension row and remove the previous attribute value. Type 1 is suitable for corrections where history is not required, but it is not suitable for historical Driver and Passenger analysis.
