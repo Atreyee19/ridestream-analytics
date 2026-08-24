@@ -65,3 +65,41 @@ When a required Driver, Passenger, Vehicle, or Location dimension is unavailable
 After the missing dimension arrives, the affected fact can be updated with the correct surrogate key.
 
 For SCD Type 2 dimensions, the correct historical version is selected by matching the fact event timestamp between the dimension’s `effective_from` and `effective_to` values.
+
+## End-to-End Idempotency Chain
+
+### File-Discovery Level
+
+ADF checks source paths and file-processing metadata before processing. A previously completed source file must not create another logical load unless controlled reprocessing is explicitly enabled.
+
+### Bronze Checkpoint Level
+
+Auto Loader checkpoints track discovered files, while Structured Streaming checkpoints track committed Event Hubs offsets. Restarting with the same checkpoint processes only new files or events.
+
+### Silver MERGE Level
+
+Silver tables use stable business keys such as `ride_id` and `payment_id`. Incoming records are deduplicated before Delta MERGE. Existing records are updated only when the incoming `updated_at` value is newer or the approved record hash has changed.
+
+### Gold MERGE Level
+
+Gold facts and aggregates use stable fact keys or aggregate keys. Reprocessing the same Silver records must update the existing Gold rows instead of inserting duplicate rows.
+
+### Audit Level
+
+The logical audit uniqueness concept is:
+
+`batch_id + entity_name + processing_stage`
+
+A completed combination must not create another successful audit result during an identical rerun. Controlled retries and reprocessing must retain traceable run information.
+
+### Complete Idempotency Chain
+
+1. ADF prevents unintended duplicate file discovery.
+2. Auto Loader checkpoints prevent already committed files from being loaded again.
+3. Event Hubs checkpoints prevent committed offsets from being reprocessed.
+4. Silver deduplication removes repeated business records and events.
+5. Silver Delta MERGE prevents duplicate target rows.
+6. Gold Delta MERGE prevents duplicate facts and aggregates.
+7. Audit uniqueness prevents duplicate completion records.
+8. Identical reruns must leave Silver and Gold row counts unchanged.
+9. A failed run must not commit an incorrect watermark.
