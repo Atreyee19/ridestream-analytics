@@ -1,0 +1,67 @@
+# RideStream Streaming Processing Design
+
+## Event Hubs Offsets and Streaming Checkpoints
+
+Azure Event Hubs exposes Kafka-compatible partition offsets for every event.
+
+The Structured Streaming checkpoint stores the offsets that were successfully processed and committed. When the stream restarts using the same checkpoint, processing continues from the committed offsets without reprocessing earlier events.
+
+A new or deleted checkpoint may cause retained Event Hubs events to be replayed. Therefore, production checkpoints must never be manually deleted. Checkpoint-loss experiments must use a separate disposable path.
+
+## Watermark and State Management
+
+RideStream uses a 10-minute watermark on `event_timestamp`.
+
+The watermark limits how long Spark retains state for operations such as event deduplication. Events arriving within the allowed 10-minute lateness window can be processed normally.
+
+Events arriving beyond the threshold are recorded in a separate late-events observation or quarantine table. A late older event must not overwrite a newer ride state.
+
+## Schema Evolution
+
+Streaming JSON is parsed using an explicit schema.
+
+A new optional field does not break processing. Known fields continue to be parsed, while the complete original JSON remains available in `raw_event_payload`.
+
+Approved schema changes are recorded with the entity, schema version, changed column, source file, affected row count, status, and timestamp.
+
+## Malformed Data and Quarantine
+
+Malformed JSON and records failing critical validation rules do not enter the valid Silver path.
+
+Quarantined records preserve:
+
+- Entity name
+- Batch ID
+- Source file
+- Reason code
+- Reason description
+- Quarantine timestamp
+- Original raw payload
+
+A corrected file is submitted as a new controlled batch. Valid corrected records can then be reprocessed without modifying or deleting the original quarantine evidence.
+
+## Deduplication and Checkpointing
+
+Deduplication and checkpointing solve different problems.
+
+Checkpointing tracks which source files or Event Hubs offsets have already been processed.
+
+Deduplication removes repeated business records or events from the incoming data. Ride events are deduplicated using `event_id`. Repeated ride-state events can also be checked using `ride_id`, `event_type`, and `event_timestamp`.
+
+Batch Ride records are deduplicated using `ride_id`, ordered by the latest `updated_at` and `bronze_ingestion_timestamp`.
+
+## Late-Arriving Facts
+
+A fact is late when its business event date is earlier than its arrival or ingestion date.
+
+Late Ride and Payment facts are still processed when their `updated_at` value is newer than the existing target record. Delta MERGE inserts unseen facts and updates existing facts only when the incoming record is newer.
+
+Only affected Gold dates, partitions, or aggregate keys are recalculated after a late fact is processed.
+
+## Late-Arriving Dimensions
+
+When a required Driver, Passenger, Vehicle, or Location dimension is unavailable, the related fact temporarily uses the Unknown surrogate key.
+
+After the missing dimension arrives, the affected fact can be updated with the correct surrogate key.
+
+For SCD Type 2 dimensions, the correct historical version is selected by matching the fact event timestamp between the dimension’s `effective_from` and `effective_to` values.
