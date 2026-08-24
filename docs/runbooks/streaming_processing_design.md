@@ -145,3 +145,16 @@ PySpark Structured Streaming is responsible for:
 - Near-real-time Gold updates
 
 ADF does not process every streaming event. Databricks Structured Streaming continuously or periodically processes live events, while ADF manages scheduled and operational workflows.
+
+## Reporting Refresh Mode
+
+The RideStream portfolio demonstration uses Databricks SQL/notebook reporting with manual query refresh.
+
+The Gold analytical views read the latest committed Delta table data, but the displayed report does not update automatically unless the query or dashboard is refreshed.
+
+Power BI DirectQuery, automatic page refresh, and continuous dashboard refresh are not currently implemented. Therefore, the project does not claim real-time Power BI reporting.
+
+The implemented flow is:
+
+Event Hubs → PySpark Structured Streaming → Bronze → Silver → Gold Delta tables → Databricks analytical views → manual report refresh.
+
